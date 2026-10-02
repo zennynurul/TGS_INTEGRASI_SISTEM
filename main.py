@@ -50,22 +50,14 @@ def create_mahasiswa(mhs: Mahasiswa):
     db_mahasiswa.append(mhs)
     return mhs
 
-# 4. PUT: Update jika ada, Tambah baru jika tidak ada (UPSERT)
-@app.put("/mahasiswa/{mhs_id}", response_model=Mahasiswa, summary="Update atau Tambah Data Baru")
-def update_or_create_mahasiswa(mhs_id: int, mhs_data: Mahasiswa):
-    # Pastikan ID pada path URL dan body data konsisten
-    mhs_data.id = mhs_id
-    
-    # Cari apakah data dengan ID tersebut sudah ada
+# 4. PUT: Perbarui Data Mahasiswa Berdasarkan ID
+@app.put("/mahasiswa/{mhs_id}", response_model=Mahasiswa, summary="Update Data by ID")
+def update_mahasiswa(mhs_id: int, updated_mhs: Mahasiswa):
     for index, mhs in enumerate(db_mahasiswa):
         if mhs.id == mhs_id:
-            # JIKA ADA: Perbarui data lama dengan data baru
-            db_mahasiswa[index] = mhs_data
-            return mhs_data
-            
-    # JIKA TIDAK ADA: Langsung masukkan sebagai data baru ke dalam list
-    db_mahasiswa.append(mhs_data)
-    return mhs_data
+            db_mahasiswa[index] = updated_mhs
+            return updated_mhs
+    raise HTTPException(status_code=404, detail="Data mahasiswa tidak ditemukan")
 
 # 5. DELETE: Hapus Data Mahasiswa Berdasarkan ID
 @app.delete("/mahasiswa/{mhs_id}", summary="Hapus Data by ID")
